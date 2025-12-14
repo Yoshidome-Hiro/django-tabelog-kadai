@@ -1,0 +1,64 @@
+{% extends "crud/base.html" %}
+{% load humanize %}
+
+{% block content %}
+{# ▼▼▼ 1. ヒーローセクション（全画面画像） ▼▼▼ #}
+<div class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="display-3 fw-bold mb-3" style="letter-spacing: 0.2em;">名古屋美食</h1>
+        <p class="fs-4 mb-5">伝統と革新が織りなす、<br>至福の一皿を探す旅へ。</p>
+        <a href="#category-section" class="btn btn-light btn-lg rounded-pill px-5">店舗を探す</a>
+    </div>
+</div>
+
+<div class="container py-5" id="category-section">
+    {# ▼▼▼ 2. カテゴリ検索（シンプルに） ▼▼▼ #}
+    <div class="text-center mb-5 mt-5">
+        <h2 class="fw-bold mb-4">Category</h2>
+        <div class="d-flex justify-content-center flex-wrap gap-2">
+            {% for category in categories %}
+                <a href="{% url 'crud:restaurant_list' %}?category={{ category.id }}" 
+                   class="btn btn-outline-dark rounded-0 px-4 py-2" 
+                   style="border-color: #ddd;">
+                    {{ category.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    {# ▼▼▼ 3. 新着店舗の表示（写真メイン） ▼▼▼ #}
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">New Arrivals</h2>
+        <p class="text-muted">新規掲載店舗のご案内</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-5 mb-5">
+        {% for restaurant in new_restaurants %}
+        <div class="col">
+            <a href="{% url 'crud:restaurant_detail' restaurant.pk %}" class="text-decoration-none text-dark">
+                <div class="card h-100 restaurant-card">
+                    {# 画像 #}
+                    {% if restaurant.image %}
+                        <img src="{{ restaurant.image.url }}" class="card-img-top" alt="{{ restaurant.name }}" style="height: 250px; object-fit: cover; border-radius: 2px;">
+                    {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center text-muted" style="height: 250px;">NO IMAGE</div>
+                    {% endif %}
+                    
+                    {# カードの中身 #}
+                    <div class="card-body text-center pt-4">
+                        <p class="text-muted small mb-1" style="letter-spacing: 0.1em;">{{ restaurant.category.name }}</p>
+                        <h5 class="card-title fw-bold mb-3">{{ restaurant.name }}</h5>
+                        <p class="card-text text-muted small">{{ restaurant.description|truncatechars:40 }}</p>
+                        <hr class="mx-auto" style="width: 30px; color: #999;">
+                        <p class="card-text small mt-3">
+                            ¥{{ restaurant.price_lower|intcomma }} - ¥{{ restaurant.price_upper|intcomma }}
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "crud/base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="text-center fw-bold mb-5">会員プランの設定</h2>
+            
+            <div class="card shadow text-center border-0">
+                <div class="card-header bg-success text-white py-3">
+                    <h4 class="mb-0 fw-bold">プレミアムプラン</h4>
+                </div>
+                <div class="card-body p-5">
+                    <h1 class="card-title display-4 fw-bold">¥300<span class="fs-4 text-muted">/月</span></h1>
+                    <ul class="list-unstyled mt-4 mb-4 text-start d-inline-block">
+                        <li class="mb-2">✅ 店舗のWeb予約が可能</li>
+                        <li class="mb-2">✅ お気に入りの店舗を無制限に保存</li>
+                        <li class="mb-2">✅ レビューの全件閲覧・投稿</li>
+                    </ul>
+                    
+                    <div class="d-grid gap-2 col-8 mx-auto">
+                        {# ▼▼▼ 修正箇所：有料会員かどうかで表示を分岐 ▼▼▼ #}
+                        {% if is_paid %}
+                            <div class="alert alert-info border-0">
+                                現在プレミアムプランに加入中です。
+                            </div>
+                            <form action="{% url 'crud:portal' %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-dark w-100 shadow-sm">
+                                    契約内容の確認・解約
+                                </button>
+                            </form>
+                        {% else %}
+                            <form action="{% url 'crud:checkout' %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-lg w-100 shadow">
+                                    アップグレードする
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="{% url 'crud:mypage' %}" class="text-muted">マイページへ戻る</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

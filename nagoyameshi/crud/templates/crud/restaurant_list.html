@@ -1,0 +1,90 @@
+{% extends "crud/base.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h2 class="fw-bold fs-3 mb-0">
+            店舗一覧 
+            <span class="fs-5 text-muted ms-2">({{ total_count }}件)</span>
+        </h2>
+
+        <form method="GET" class="d-flex align-items-center">
+ 
+            {% if keyword %}
+                <input type="hidden" name="keyword" value="{{ keyword }}">
+            {% endif %}
+            {% if category_id %}
+                <input type="hidden" name="category" value="{{ category_id }}">
+            {% endif %}
+
+  
+            <select class="form-select form-select-sm me-2" name="order" onchange="this.form.submit()" style="width: auto;">
+                <option value="" {% if order == "" %}selected{% endif %}>新着順</option>
+                <option value="price_asc" {% if order == "price_asc" %}selected{% endif %}>価格が安い順</option>
+                <option value="price_desc" {% if order == "price_desc" %}selected{% endif %}>価格が高い順</option>
+            </select>
+        </form>
+    </div>
+
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for restaurant in object_list %}
+        <div class="col">
+            <a href="{% url 'crud:restaurant_detail' restaurant.pk %}" class="text-decoration-none text-dark">
+                <div class="card h-100 shadow-sm border-0">
+                    {% if restaurant.image %}
+                        <img src="{{ restaurant.image.url }}" class="card-img-top" alt="{{ restaurant.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">NO IMAGE</div>
+                    {% endif %}
+                    
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">{{ restaurant.name }}</h5>
+                        <p class="card-text text-muted small">{{ restaurant.category.name }}</p>
+                        <p class="card-text mt-2">
+                            ¥{{ restaurant.price_lower|intcomma }} ~ ¥{{ restaurant.price_upper|intcomma }}
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+
+        <div class="col-12">
+            <div class="alert alert-warning text-center">
+                該当する店舗は見つかりませんでした。
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+
+    {% if is_paginated %}
+    <div class="d-flex justify-content-center mt-5">
+        <nav>
+            <ul class="pagination">
+
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link text-dark" href="?page={{ page_obj.previous_page_number }}{% if keyword %}&keyword={{ keyword }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}{% if order %}&order={{ order }}{% endif %}">前へ</a>
+                    </li>
+                {% endif %}
+                
+
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link bg-dark border-dark">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link text-dark" href="?page={{ page_obj.next_page_number }}{% if keyword %}&keyword={{ keyword }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}{% if order %}&order={{ order }}{% endif %}">次へ</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

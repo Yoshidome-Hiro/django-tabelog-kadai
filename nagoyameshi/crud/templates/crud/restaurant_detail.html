@@ -1,0 +1,144 @@
+{% extends "crud/base.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="mb-0">{{ object.name }}</h1>
+                
+                {% if user.is_authenticated %}
+                <form action="{% url 'crud:favorite' object.pk %}" method="post">
+                    {% csrf_token %}
+                    {% if is_favorite %}
+                         <button type="submit" class="btn btn-link text-danger fs-3 p-0 text-decoration-none">
+                            ♥ 解除
+                        </button>
+                    {% else %}
+                        {# まだの時：白いハート #}
+                        <button type="submit" class="btn btn-link text-muted fs-3 p-0 text-decoration-none">
+                            ♡ お気に入り
+                        </button>
+                    {% endif %}
+                </form>
+                {% endif %}
+            </div>
+
+            {# 画像 #}
+            <div class="mb-4">
+                {% if object.image %}
+                    <img src="{{ object.image.url }}" class="img-fluid rounded shadow-sm w-100" alt="{{ object.name }}" style="max-height: 400px; object-fit: cover;">
+                {% else %}
+                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded" style="height: 300px;">NO IMAGE</div>
+                {% endif %}
+            </div>
+
+            {# 基本情報 #}
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3">店舗情報</h5>
+                    <p class="card-text">{{ object.description }}</p>
+                    
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th class="bg-light w-25">カテゴリ</th>
+                                <td>{{ object.category.name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">価格帯</th>
+                                <td>¥{{ object.price_lower|intcomma }} ～ ¥{{ object.price_upper|intcomma }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">営業時間</th>
+                                <td>{{ object.opening_time }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">定休日</th>
+                                <td>{{ object.closing_day }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">住所</th>
+                                <td>{{ object.address }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">電話番号</th>
+                                <td>{{ object.phone_number }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div class="text-center mb-4 d-grid gap-2 d-md-block">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'crud:review_create' object.pk %}" class="btn btn-outline-primary rounded-pill px-4 me-2">
+                        ★ レビュー投稿
+                    </a>
+                    {# ▼▼▼ 追加：予約ボタン ▼▼▼ #}
+                    <a href="{% url 'crud:reservation_create' object.pk %}" class="btn btn-success rounded-pill px-4">
+                        Webで予約する
+                    </a>
+                {% else %}
+                    <a href="{% url 'crud:login' %}" class="btn btn-outline-dark rounded-pill px-4">
+                        ログインして予約・レビュー
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="text-center mb-4">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'crud:review_create' object.pk %}" class="btn btn-primary rounded-pill px-4">
+                        ★ レビューを投稿する
+                    </a>
+                {% else %}
+                    <a href="{% url 'crud:login' %}" class="btn btn-outline-dark rounded-pill px-4">
+                        ログインしてレビューを書く
+                    </a>
+                {% endif %}
+            </div>
+            <div class="mb-5">
+                <h3 class="fw-bold mb-4 border-bottom pb-2">カスタマーレビュー</h3>
+                
+                {% if reviews %}
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        {% for review in reviews %}
+                        <div class="col">
+                            <div class="card h-100 shadow-sm border-0 bg-light">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="fw-bold mb-0">{{ review.user.username }} さん</h6>
+                                        <span class="text-muted small">{{ review.created_at|date:"Y/m/d" }}</span>
+                                    </div>
+                                    <div class="mb-2 text-warning">
+                                        {# 星の数を表示（簡易版） #}
+                                        <span class="fs-5">
+                                            {% if review.score == 1 %}★☆☆☆☆
+                                            {% elif review.score == 2 %}★★☆☆☆
+                                            {% elif review.score == 3 %}★★★☆☆
+                                            {% elif review.score == 4 %}★★★★☆
+                                            {% elif review.score == 5 %}★★★★★
+                                            {% endif %}
+                                        </span>
+                                        <span class="text-dark ms-1 small">{{ review.score }}点</span>
+                                    </div>
+                                    <p class="card-text mt-3">{{ review.comment|linebreaksbr }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-center text-muted">まだレビューはありません。</p>
+                {% endif %}
+            </div>
+
+            <div class="text-center">
+                <a href="{% url 'crud:top' %}" class="btn btn-outline-secondary">トップページへ戻る</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
