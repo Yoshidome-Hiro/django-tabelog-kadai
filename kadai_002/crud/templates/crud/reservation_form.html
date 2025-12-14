@@ -1,0 +1,38 @@
+{% extends "crud/base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="text-center fw-bold mb-4">予約画面</h2>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white text-center">
+                    店舗名を表示したい場合はViewで設定が必要ですが、ひとまず予約を進めます
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">予約日時</label>
+                            {{ form.reservation_date }}
+                            <div class="form-text">※カレンダーアイコンをクリックして選択してください</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">人数</label>
+                            {{ form.number_of_people }}
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success text-white">予約する</button>
+                            <a href="{% url 'crud:restaurant_detail' view.kwargs.pk %}" class="btn btn-outline-secondary">戻る</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

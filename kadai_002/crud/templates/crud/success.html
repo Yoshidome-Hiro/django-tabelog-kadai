@@ -1,0 +1,24 @@
+{% extends "crud/base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow-sm border-0 p-5">
+                <div class="mb-4 text-success display-1">
+                    ♥
+                </div>
+                <h1 class="fw-bold mb-3">手続きが完了しました</h1>
+                <p class="lead text-muted mb-5">
+                    プレミアム会員への登録ありがとうございます。<br>
+                    NAGOYAMESHIでの体験を存分にお楽しみください。
+                </p>
+                
+                <a href="{% url 'crud:top' %}" class="btn btn-success btn-lg rounded-pill px-5">
+                    トップページへ戻る
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

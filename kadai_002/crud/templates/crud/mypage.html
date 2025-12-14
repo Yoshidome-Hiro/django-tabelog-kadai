@@ -1,0 +1,94 @@
+{% extends "crud/base.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm text-center py-4">
+                <div class="card-body">
+                    <div class="mb-3">
+                          <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px; font-size: 2rem;">
+                            {{ user.username|slice:":1" }}
+                        </div>
+                    </div>
+                    <h5 class="fw-bold">{{ user.username }} 様</h5>
+                    <p class="text-muted small">{{ user.email }}</p>
+                    
+                    <div class="d-grid gap-2 mt-3">
+                        <a href="{% url 'crud:user_edit' %}" class="btn btn-outline-dark btn-sm">会員情報を編集</a>
+                        <a href="{% url 'crud:settings' %}" class="btn btn-outline-success btn-sm">有料プランを見る</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            
+            {# 1. 予約履歴 #}
+            <h4 class="fw-bold mb-3 border-bottom pb-2">予約履歴</h4>
+            <div class="mb-5">
+                {% if reservations %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>店舗名</th>
+                                    <th>予約日時</th>
+                                    <th>人数</th>
+                                    <th>詳細</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for r in reservations %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'crud:restaurant_detail' r.restaurant.pk %}" class="text-decoration-none text-dark fw-bold">
+                                            {{ r.restaurant.name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ r.reservation_date|date:"Y/m/d H:i" }}</td>
+                                    <td>{{ r.number_of_people }}名</td>
+                                    <td>
+                                        <a href="{% url 'crud:restaurant_detail' r.restaurant.pk %}" class="btn btn-sm btn-outline-secondary">確認</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">予約履歴はありません。</p>
+                {% endif %}
+            </div>
+
+            {# 2. レビュー履歴 #}
+            <h4 class="fw-bold mb-3 border-bottom pb-2">レビュー履歴</h4>
+            <div>
+                {% if reviews %}
+                    <div class="list-group">
+                        {% for review in reviews %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1 fw-bold">{{ review.restaurant.name }}</h5>
+                                <small class="text-muted">{{ review.created_at|date:"Y/m/d" }}</small>
+                            </div>
+                            <p class="mb-1 text-warning">
+                                <span class="me-2">★{{ review.score }}</span>
+                            </p>
+                            <p class="mb-1 text-muted small">{{ review.comment|truncatechars:50 }}</p>
+                            <small>
+                                <a href="{% url 'crud:restaurant_detail' review.restaurant.pk %}" class="text-decoration-none">店舗を見る</a>
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">投稿したレビューはありません。</p>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
